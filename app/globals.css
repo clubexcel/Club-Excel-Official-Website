@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Inter", var(--font-geist-sans), sans-serif;
+  --font-mono: "JetBrains Mono", var(--font-geist-mono), monospace;
+}
+
+:root {
+  --cursor-size: 20px;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #020202;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Custom Cursor */
+#cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--cursor-size);
+  height: var(--cursor-size);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transition:
+    width 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    height 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    background 0.3s ease,
+    border 0.3s ease;
+  mix-blend-mode: difference;
+}
+
+#cursor.hovered {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 1);
+  mix-blend-mode: normal;
+}
+
+/* Performance Optimizations */
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
+
+#hero,
+#navigation {
+  content-visibility: visible;
+}
+
+/* Background Canvas */
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.3;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+/* Simplified Glassmorphism */
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Portal/Tilt Effects */
+.portal-container {
+  perspective: 1000px;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.portal-window {
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  will-change: transform;
+  transition:
+    transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    border 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.tilt-inner {
+  transform: translateZ(30px);
+  pointer-events: none;
+}
+
+/* Utilities */
+.bg-grid-small {
+  background-image:
+    linear-gradient(to right, #222 1px, transparent 1px),
+    linear-gradient(to bottom, #222 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(ellipse at center, black 50%, transparent 90%);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 50%,
+    transparent 90%
+  );
+  opacity: 0.08;
+}
+
+.code-window {
+  background: #080808;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.test-padding {
+  margin-bottom: 30px;
+}
+
+.test-padding-more {
+  margin-bottom: 35px;
+}
+
+.code-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.blink-cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Aura Background */
+.aura-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(59, 130, 246, 0.1) 0%,
+    transparent 70%
+  );
+}

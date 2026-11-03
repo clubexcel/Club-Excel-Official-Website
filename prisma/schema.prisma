@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Member {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  phone        String?
+  role         Role          @default(MEMBER)
+  designation  String?
+  year         String?
+  skills       String[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  links        MemberLink[]
+  achievements Achievement[] @relation("AchievementMembers")
+}
+
+model MemberLink {
+  id        String   @id @default(uuid())
+  platform  String
+  url       String
+  memberId  String
+  createdAt DateTime @default(now())
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id                String           @id @default(uuid())
+  title             String
+  description       String?
+  status            EventStatusType  @default(UPCOMING)
+  type              EventType
+  startAt           DateTime
+  endAt             DateTime?
+  venue             String?
+  registrationStart DateTime?
+  registrationEnd   DateTime?
+  capacity          Int?
+  whatsappLink      String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdBy         String
+  creator           Admin            @relation(fields: [createdBy], references: [id])
+  formFields        EventFormField[]
+  responses         EventResponse[]
+}
+
+model EventFormField {
+  id          String    @id @default(uuid())
+  eventId     String
+  name        String
+  label       String
+  type        FieldType
+  required    Boolean   @default(false)
+  placeholder String?
+  order       Int?
+  createdAt   DateTime  @default(now())
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventResponse {
+  id         String   @id @default(uuid())
+  eventId    String
+  name       String
+  email      String
+  phone      String?
+  college    String?
+  attendance Boolean  @default(false)
+  answers    Json
+  createdAt  DateTime @default(now())
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, email])
+}
+
+model Achievement {
+  id          String          @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime        @default(now())
+  achievedAt  DateTime
+  tag         AchievementType
+  members     Member[]        @relation("AchievementMembers")
+}
+
+model GalleryAlbum {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+}
+
+model Media {
+  id        String       @id @default(uuid())
+  url       String
+  publicId  String?
+  caption   String?
+  createdAt DateTime     @default(now())
+  usages    MediaUsage[]
+}
+
+model MediaUsage {
+  id        String         @id @default(uuid())
+  type      MediaUsageType
+  entityId  String
+  mediaId   String
+  createdAt DateTime       @default(now())
+  media     Media          @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id                     String             @id @default(uuid())
+  name                   String
+  email                  String             @unique
+  password               String
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  createdEvents          Event[]
+  createdRecruitmentDrives RecruitmentDrive[]
+}
+model RecruitmentDrive {
+  id                String                 @id @default(uuid())
+  title             String
+  description       String?
+  year              Int
+  status            RecruitmentDriveStatus @default(UPCOMING)
+  registrationStart DateTime?
+  registrationEnd   DateTime?
+  whatsappLink      String?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  createdBy         String
+  creator           Admin                  @relation(fields: [createdBy], references: [id])
+  formFields        RecruitmentFormField[]
+  responses         RecruitmentResponse[]
+}
+
+model RecruitmentFormField {
+  id            String           @id @default(uuid())
+  recruitmentId String
+  name          String
+  label         String
+  type          FieldType
+  required      Boolean          @default(false)
+  placeholder   String?
+  order         Int?
+  createdAt     DateTime         @default(now())
+  recruitment   RecruitmentDrive @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
+}
+model RecruitmentResponse {
+  id             String           @id @default(uuid())
+  recruitmentId  String
+  name           String
+  rollNumber     String
+  registrationNo String
+  gender         Gender
+  nistEmail      String
+  personalEmail  String
+  branch         String
+  hackerrankId   String
+  phoneNumber    String
+  locality       Locality
+  techStack      String
+  isSelected     Boolean          @default(false)
+  answers        Json             @default("{}")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  recruitment    RecruitmentDrive @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
+
+  @@unique([recruitmentId, personalEmail])
+}
+
+model ContactInquiry {
+  id        String               @id @default(uuid())
+  name      String
+  email     String
+  phoneNo   String
+  message   String
+  status    ContactInquiryStatus @default(PENDING)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+enum EventType {
+  TECH
+  NON_TECH
+}
+
+enum RecruitmentDriveStatus {
+  UPCOMING
+  OPEN
+  CLOSED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Locality {
+  LOCALITE
+  HOSTELITE
+}
+
+enum EventStatusType {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELED
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  URL
+  NUMBER
+  EMAIL
+  PHONE
+  FILE
+}
+
+enum MediaUsageType {
+  PROFILE
+  EVENT
+  ACHIEVEMENT
+  GALLERY
+}
+
+enum Role {
+  MEMBER
+  ADVISOR
+  ALUMNI
+}
+
+enum ContactInquiryStatus {
+  PENDING
+  READ
+  RESOLVED
+}
+
+enum AchievementType {
+  HACKATHON
+  COMPETITION
+  CERTIFICATION
+  WORKSHOP
+  INTERNSHIP
+  PLACEMENT
+  RESEARCH
+  PUBLICATION
+  OPEN_SOURCE
+  OTHER
+}
